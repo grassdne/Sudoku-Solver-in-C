@@ -3,9 +3,9 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#define MAX_SOLUTIONS 100000
+#define MAX_SOLUTIONS 10000
 #define LEN 9
-#define BOXLEN 3
+#define BOX_LENGTH 3
 
 typedef char small;
 
@@ -26,13 +26,13 @@ int num_mallocs;
 int num_frees;
 
 
-struct board_link {
+typedef struct board_link {
     board_arr value;
     struct board_link *next;
-};
+} board_link;
 
-struct board_link solutions_start;
-struct board_link *solutions_current;
+board_link solutions_start;
+board_link *solutions_current;
 
 
 void copy_board_to_solutions(board_arr board) {
@@ -48,7 +48,7 @@ bool solve_easy_tiles(board_arr board) {
     for (int i = 0; i < LEN; ++i) {
         for (int j = 0; j < LEN; ++j) {
             if (board[i][j] == 0) {
-                int choice = 0;
+                small choice = 0;
                 for (small n = 1; n <= LEN; ++n) {
                     if (possible_at(board, i, j, n)) {
                         if (choice) {
@@ -71,17 +71,17 @@ bool solve_easy_tiles(board_arr board) {
 
 void board_pretty_str(board_arr board, char *result) {
     for (int i = 0; i < LEN; ++i) {
-        if (i && i % BOXLEN == 0) {
-            for (int j = 0; j < LEN*3 + 3 * (BOXLEN - 1); ++j) {
+        if (i && i % BOX_LENGTH == 0) {
+            for (int j = 0; j < LEN*3 + 3 * (BOX_LENGTH - 1); ++j) {
                 *result++ = '~';
             }
             *result++ = '\n';
         }
 
         for (int j = 0; j < LEN; ++j) {
-            int v = board[i][j];
+            small v = board[i][j];
 
-            if (j && j % BOXLEN == 0) {
+            if (j && j % BOX_LENGTH == 0) {
                 *result++ = ' ';
                 *result++ = '|';
                 *result++ = ' ';
@@ -95,10 +95,10 @@ void board_pretty_str(board_arr board, char *result) {
             else {
                 *result++ = ' ';
                 if (v < 10) {
-                    *result++ = '0' + v;
+                    *result++ = (char)('0' + v);
                 }
                 else {
-                    *result++ = 'A' + v - 10;
+                    *result++ = (char)('A' + v - 10);
                 }
                 *result++ = ' ';
             }
@@ -132,18 +132,17 @@ void solve(board_arr board) {
     if (num_solutions >= MAX_SOLUTIONS) abort_solving = true;
     copy_board_to_solutions(board);
     add_link();
-    return;
 }
 
 void add_link() {
-    solutions_current->next = (struct board_link *)malloc(sizeof(struct board_link));
+    solutions_current->next = (board_link *) (board_link *) malloc(sizeof(board_link));
     ++num_mallocs;
     solutions_current = solutions_current->next;
 }
 
 void free_links() {
-    struct board_link *link = solutions_start.next;
-    struct board_link *temp;
+    board_link *link = solutions_start.next;
+    board_link *temp;
 
     while (link != NULL) {
         temp = link->next;
@@ -163,10 +162,10 @@ bool possible_at(board_arr board, int row, int col, small num) {
 
     }
 
-    int col_start = col / BOXLEN * BOXLEN;
-    int row_start = row / BOXLEN * BOXLEN;
-    for (int i = row_start; i < row_start + BOXLEN; ++i) {
-        for (int j = col_start; j < col_start + BOXLEN; ++j) {
+    int col_start = col / BOX_LENGTH * BOX_LENGTH;
+    int row_start = row / BOX_LENGTH * BOX_LENGTH;
+    for (int i = row_start; i < row_start + BOX_LENGTH; ++i) {
+        for (int j = col_start; j < col_start + BOX_LENGTH; ++j) {
             if (board[i][j] == num) return false;
         }
     }
@@ -178,10 +177,10 @@ bool possible_at(board_arr board, int row, int col, small num) {
 int main() {
     solutions_current = &solutions_start;
     num_solutions = 0;
-    assert(BOXLEN * BOXLEN == LEN);
+    assert(BOX_LENGTH * BOX_LENGTH == LEN);
 
-    //*
-    assert(LEN == 9 && BOXLEN == 3);
+    /*
+    assert(LEN == 9 && BOX_LENGTH == 3);
     board_arr board = {
             {5, 3, 0, 0, 7, 0, 0, 0, 0},
             {6, 0, 0, 1, 9, 5, 0, 0, 0},
@@ -195,23 +194,23 @@ int main() {
     };
     //*/
 
-    /*
-    assert(LEN == 9 && BOXLEN == 3);
+    //*
+    assert(LEN == 9 && BOX_LENGTH == 3);
     board_arr board = {
             {0, 3, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 1, 0, 5, 0, 0, 0},
             {0, 9, 8, 0, 0, 0, 0, 6, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0, 3},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 8, 0, 3, 0, 0, 1},
-            {7, 0, 0, 0, 2, 0, 0, 0, 6},
-            {0, 6, 0, 0, 0, 0, 2, 8, 0},
-            {0, 0, 0, 4, 1, 9, 0, 0, 0},
-            {0, 0, 0, 0, 8, 0, 0, 0, 0},
+            {0, 0, 0, 0, 2, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 2, 8, 0},
+            {0, 0, 0, 0, 1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
     };
     //*/
 
     /*
-    assert(LEN == 16 && BOXLEN == 4);
+    assert(LEN == 16 && BOX_LENGTH == 4);
     board_arr board = {
             {0 , 6 , 0 , 0 ,   0 , 0 , 0 , 8 ,   11, 0 , 0 , 15,   14, 0 , 0 , 16},
             {15, 11, 0 , 0 ,   0 , 16, 14, 0 ,   0 , 0 , 12, 0 ,   0 , 6 , 0 , 0 },
@@ -240,6 +239,8 @@ int main() {
     board_pretty_str(board, result);
 
     solve(board);
+    printf("%lu\n", sizeof board);
+    printf("%lu\n", sizeof(small));
 
     printf("Found %d Solution%s%s...\n",
            num_solutions,
@@ -259,7 +260,7 @@ int main() {
     }
 
     free_links();
-    printf("Dynamic allocs: %d\nFreed pointers: %d\n", num_mallocs, num_frees);
+    printf("Dynamic allocations: %d\nFreed pointers: %d\n", num_mallocs, num_frees);
     assert(num_frees == num_mallocs);
 
     return 0;

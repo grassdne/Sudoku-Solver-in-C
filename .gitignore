@@ -1,4 +1,4 @@
-solver
+main
 *.dSYM
 .idea*
 cmake*
