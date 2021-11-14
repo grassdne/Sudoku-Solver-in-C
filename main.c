@@ -220,7 +220,7 @@ int main() {
 
             {0 , 15, 11, 10,   0 , 0 , 16, 2 ,   13, 8 , 9 , 12,   0 , 0 , 0 , 0 },
             {12, 13, 0 , 0 ,   4 , 1 , 5 , 6 ,   2 , 3 , 0 , 0 ,   0 , 0 , 11, 10},
-            {5 , 0 , 6 , 1 ,   12, 0 , 9 , 0 ,   15, 11, 10, 7 ,   16, 0 , 0 , 3 },
+            {5 , 0 , 6 ≤, 1 ,   12, 0 , 9 , 0 ,   15, 11, 10, 7 ,   16, 0 , 0 , 3 },
             {0 , 2 , 0 , 0 ,   0 , 10, 0 , 11,   6 , 0 , 5 , 0 ,   0 , 13, 0 , 9 },
 
             {10, 7 , 15, 11,   16, 0 , 0 , 0 ,   12, 13, 0 , 0 ,   0 , 0 , 0 , 6 },
@@ -242,9 +242,9 @@ int main() {
     solve(board);
 
     printf("Found %d Solution%s%s...\n",
-        num_solutions,
-        num_solutions ? "s" : "",
-        num_solutions >= MAX_SOLUTIONS ? " (Max Solutions)" : "");
+           num_solutions,
+           num_solutions ? "s" : "",
+           num_solutions >= MAX_SOLUTIONS ? " (Max Solutions)" : "");
 
     solutions_current = &solutions_start;
     for (int i = 0; i < num_solutions && i < MAX_SOLUTIONS; ++i) {
