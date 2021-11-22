@@ -136,6 +136,11 @@ void solve(board_arr board) {
 
 void add_link() {
     solutions_current->next = (board_link *) (board_link *) malloc(sizeof(board_link));
+    if (!solutions_current->next) {
+        --num_solutions;
+        abort_solving = true;
+        return;
+    }
     ++num_mallocs;
     solutions_current = solutions_current->next;
 }
