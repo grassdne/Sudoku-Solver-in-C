@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
-#include <stdlib.h>
+
 
 #define MAX_SOLUTIONS 10000
 #define LEN 9
@@ -16,29 +16,16 @@ bool solve_easy_tiles(board_arr board);
 void board_pretty_str(board_arr board, char *result);
 void solve(board_arr board);
 void copy_board_to_solutions(board_arr board);
-void add_link();
-
 
 bool abort_solving = false;
 int num_solutions;
 
-int num_mallocs;
-int num_frees;
-
-
-typedef struct board_link {
-    board_arr value;
-    struct board_link *next;
-} board_link;
-
-board_link solutions_start;
-board_link *solutions_current;
-
+board_arr solutions[MAX_SOLUTIONS];
 
 void copy_board_to_solutions(board_arr board) {
     for (int i = 0; i < LEN; ++i) {
         for (int j = 0; j < LEN; ++j) {
-            solutions_current->value[i][j] = board[i][j];
+            solutions[num_solutions-1][i][j] = board[i][j];
         }
     }
 }
@@ -131,25 +118,6 @@ void solve(board_arr board) {
     ++num_solutions;
     if (num_solutions >= MAX_SOLUTIONS) abort_solving = true;
     copy_board_to_solutions(board);
-    add_link();
-}
-
-void add_link() {
-    solutions_current->next = (board_link *) (board_link *) malloc(sizeof(board_link));
-    ++num_mallocs;
-    solutions_current = solutions_current->next;
-}
-
-void free_links() {
-    board_link *link = solutions_start.next;
-    board_link *temp;
-
-    while (link != NULL) {
-        temp = link->next;
-        free(link);
-        ++num_frees;
-        link = temp;
-    }
 }
 
 
@@ -175,7 +143,6 @@ bool possible_at(board_arr board, int row, int col, small num) {
 
 
 int main() {
-    solutions_current = &solutions_start;
     num_solutions = 0;
     assert(BOX_LENGTH * BOX_LENGTH == LEN);
 
@@ -243,23 +210,17 @@ int main() {
     printf("Found %d Solution%s%s...\n",
            num_solutions,
            num_solutions ? "s" : "",
-           num_solutions >= MAX_SOLUTIONS ? " (Max Solutions)" : "");
+           abort_solving ? " (Max Solutions)" : "");
 
-    solutions_current = &solutions_start;
     for (int i = 0; i < num_solutions && i < MAX_SOLUTIONS; ++i) {
         if (i > 3) {
             printf("Press Enter to show another solution. Or any other key to exit.\n");
             if (getc(stdin) != '\n') break;
         }
         printf("\n    ----  Solution [%d] ---- \n", i+1);
-        board_pretty_str(solutions_current->value, result);
+        board_pretty_str(solutions[i], result);
         printf("%s\n", result);
-        solutions_current = solutions_current->next;
     }
-
-    free_links();
-    printf("Dynamic allocations: %d\nFreed pointers: %d\n", num_mallocs, num_frees);
-    assert(num_frees == num_mallocs);
 
     return 0;
 }
