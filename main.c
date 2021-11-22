@@ -239,8 +239,6 @@ int main() {
     board_pretty_str(board, result);
 
     solve(board);
-    printf("%lu\n", sizeof board);
-    printf("%lu\n", sizeof(small));
 
     printf("Found %d Solution%s%s...\n",
            num_solutions,
